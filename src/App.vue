@@ -1,47 +1,74 @@
-<script setup>
-/* import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue' */
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-<!--     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div> -->
-  </header>
-
-  <main>
- <!--    <TheWelcome /> -->
-  </main>
+  <div>
+    <form @submit.prevent="submitVideo">
+      <div>
+        <label>Upload Video:</label>
+        <input type="file" @change="handleFile" />
+      </div>
+      <div>
+        <label>Team 1 Player Color (R,G,B):</label>
+        <input v-model="team1PlayerColor" type="text" />
+      </div>
+      <div>
+        <label>Team 1 Goalkeeper Color (R,G,B):</label>
+        <input v-model="team1GoalkeeperColor" type="text" />
+      </div>
+      <div>
+        <label>Team 2 Player Color (R,G,B):</label>
+        <input v-model="team2PlayerColor" type="text" />
+      </div>
+      <div>
+        <label>Team 2 Goalkeeper Color (R,G,B):</label>
+        <input v-model="team2GoalkeeperColor" type="text" />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+import axios from "axios";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+export default {
+  data() {
+    return {
+      video: null,
+      team1PlayerColor: "",
+      team1GoalkeeperColor: "",
+      team2PlayerColor: "",
+      team2GoalkeeperColor: "",
+    };
+  },
+  methods: {
+    handleFile(event) {
+      this.video = event.target.files[0];
+    },
+    async submitVideo() {
+      if (!this.video) {
+        alert("Please upload a video.");
+        return;
+      }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+      const formData = new FormData();
+      formData.append("video", this.video);
+      formData.append("club1_player_color", this.team1PlayerColor);
+      formData.append("club1_goalkeeper_color", this.team1GoalkeeperColor);
+      formData.append("club2_player_color", this.team2PlayerColor);
+      formData.append("club2_goalkeeper_color", this.team2GoalkeeperColor);
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+      try {
+        const response = await axios.post("http://localhost:5000/process-video", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log(response.data);
+        alert("Video processed successfully.");
+      } catch (error) {
+        console.error(error);
+        alert("Error processing video.");
+      }
+    },
+  },
+};
+</script>
