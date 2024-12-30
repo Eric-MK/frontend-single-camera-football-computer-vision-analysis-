@@ -23,6 +23,12 @@
       </div>
       <button type="submit">Submit</button>
     </form>
+
+    <div v-if="outputVideoUrl">
+      <h3>Processed Video:</h3>
+      <video controls :src="outputVideoUrl" width="600"></video>
+      <a :href="outputVideoUrl" download="processed_video.mp4">Download Video</a>
+    </div>
   </div>
 </template>
 
@@ -37,6 +43,7 @@ export default {
       team1GoalkeeperColor: "",
       team2PlayerColor: "",
       team2GoalkeeperColor: "",
+      outputVideoUrl: null, // Store the URL of the output video
     };
   },
   methods: {
@@ -62,8 +69,7 @@ export default {
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log(response.data);
-        alert("Video processed successfully.");
+        this.outputVideoUrl = `http://localhost:5000${response.data.output_video}`;
       } catch (error) {
         console.error(error);
         alert("Error processing video.");
