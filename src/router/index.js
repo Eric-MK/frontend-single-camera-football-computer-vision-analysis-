@@ -4,7 +4,6 @@ import HomePage from '../components/HomePage.vue';
 import Login from '../components/Login.vue';
 import Registration from '../components/Registration.vue';
 
-
 const routes = [
   { path: '/', component: LandingPage },
   { path: '/login', component: Login },
@@ -12,7 +11,7 @@ const routes = [
   {
     path: '/home',
     component: HomePage,
-    meta: { requiresAuth: true } // Add a meta field for protected routes
+    meta: { requiresAuth: true } // Protected route
   },
 ];
 
@@ -23,12 +22,35 @@ const router = createRouter({
 
 // Route Guard for Authentication
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // Check if token exists
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login'); // Redirect to login if not authenticated
+  const token = localStorage.getItem('token');
+  
+  if (to.meta.requiresAuth) {
+    if (!token) {
+      // No token, redirect to login
+      next('/login');
+    } else {
+      // If token exists, validate it (you can add token expiration check here)
+      const isTokenValid = checkTokenValidity(token);
+      
+      if (!isTokenValid) {
+        // Token expired or invalid, redirect to login
+        localStorage.removeItem('token'); // Clear the invalid token
+        next('/login');
+      } else {
+        next(); // Proceed to the route
+      }
+    }
   } else {
-    next(); // Proceed to the route
+    next(); // If route doesn't require authentication, proceed normally
   }
 });
+
+function checkTokenValidity(token) {
+  // Check token expiration (if you have an expiry field in your JWT)
+  const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+  const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
+  
+  return payload.exp > currentTime; // Token is valid if expiration time is in the future
+}
 
 export default router;
