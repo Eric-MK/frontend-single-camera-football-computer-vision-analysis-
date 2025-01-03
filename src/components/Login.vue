@@ -37,6 +37,15 @@
         <div class="spinner"></div>
       </div>
     </form>
+
+    <!-- Modal for invalid login -->
+    <div v-if="showErrorModal" class="modal-overlay">
+      <div class="modal">
+        <p>Invalid email or password. Would you like to try again or go to the registration page?</p>
+        <button @click="retryLogin">Try Again</button>
+        <button @click="goToRegister">Go to Registration</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -53,6 +62,7 @@ export default {
         password: false,
       },
       loading: false, // Loading state for API requests
+      showErrorModal: false, // To show modal when login fails
     };
   },
   methods: {
@@ -81,7 +91,8 @@ export default {
         alert("Login successful!");
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          alert("Invalid email or password.");
+          // Show modal when login fails
+          this.showErrorModal = true;
         } else {
           alert("An error occurred. Please try again.");
         }
@@ -89,6 +100,17 @@ export default {
         this.loading = false; // Reset loading state
       }
     },
+
+    retryLogin() {
+      this.showErrorModal = false; // Hide modal
+      this.email = ''; // Reset email field
+      this.password = ''; // Reset password field
+    },
+
+    goToRegister() {
+      this.showErrorModal = false; // Hide modal
+      this.$router.push("/register"); // Redirect to registration page
+    }
   },
 };
 </script>
@@ -199,5 +221,39 @@ label {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+button {
+  margin: 5px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 </style>
