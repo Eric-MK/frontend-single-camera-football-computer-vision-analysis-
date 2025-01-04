@@ -2,9 +2,10 @@
   <nav class="navbar">
     <ul class="nav-links">
       <li><router-link to="/">Home</router-link></li>
+      <!-- Upload Video link visible only when authenticated -->
+      <li v-if="authState.isAuthenticated"><router-link to="/home">Upload Video</router-link></li> 
       <li v-if="!authState.isAuthenticated"><router-link to="/login">Login</router-link></li>
       <li v-if="!authState.isAuthenticated"><router-link to="/register">Register</router-link></li>
-      <!-- Add this link to UserVideos page -->
       <li v-if="authState.isAuthenticated"><router-link to="/user-videos">Your Videos</router-link></li>
     </ul>
     <div class="user-section" v-if="authState.isAuthenticated">
