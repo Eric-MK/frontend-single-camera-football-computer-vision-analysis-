@@ -11,7 +11,7 @@ const routes = [
   {
     path: '/home',
     component: HomePage,
-    meta: { requiresAuth: false } // Protected route
+    meta: { requiresAuth: true }, // Protected route
   },
 ];
 
@@ -22,35 +22,21 @@ const router = createRouter({
 
 // Route Guard for Authentication
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('user_id');
+  console.log('Checking user_id in localStorage:', userId);  // Debugging line
   
   if (to.meta.requiresAuth) {
-    if (!token) {
-      // No token, redirect to login
-      next('/login');
+    if (!userId) {
+      console.log('No user_id found, redirecting to login');  // Debugging line
+      next('/login');  // Redirect to login if no user_id found
     } else {
-      // If token exists, validate it (you can add token expiration check here)
-      const isTokenValid = checkTokenValidity(token);
-      
-      if (!isTokenValid) {
-        // Token expired or invalid, redirect to login
-        localStorage.removeItem('token'); // Clear the invalid token
-        next('/login');
-      } else {
-        next(); // Proceed to the route
-      }
+      console.log('user_id found, accessing the route');  // Debugging line
+      next(); // User is authenticated, proceed to the route
     }
   } else {
-    next(); // If route doesn't require authentication, proceed normally
+    console.log('Route does not require authentication, proceeding');  // Debugging line
+    next();  // If route doesn't require authentication, proceed normally
   }
 });
-
-function checkTokenValidity(token) {
-  // Check token expiration (if you have an expiry field in your JWT)
-  const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
-  const currentTime = Math.floor(Date.now() / 1000); // Get current time in seconds
-  
-  return payload.exp > currentTime; // Token is valid if expiration time is in the future
-}
 
 export default router;
