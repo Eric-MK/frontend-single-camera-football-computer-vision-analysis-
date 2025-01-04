@@ -85,9 +85,11 @@ export default {
           password: this.password,
         });
 
-        // Handle successful login
-        localStorage.setItem("token", response.data.access_token); // Save JWT token
-        this.$router.push("/home"); // Navigate to homepage
+        // Save user_id in localStorage
+        localStorage.setItem("user_id", response.data.user_id);
+
+        // Navigate to homepage
+        this.$router.push("/home");
         alert("Login successful!");
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -102,18 +104,25 @@ export default {
     },
 
     retryLogin() {
+      this.clearForm();
       this.showErrorModal = false; // Hide modal
-      this.email = ''; // Reset email field
-      this.password = ''; // Reset password field
     },
 
     goToRegister() {
+      this.clearForm();
       this.showErrorModal = false; // Hide modal
       this.$router.push("/register"); // Redirect to registration page
-    }
+    },
+
+    clearForm() {
+      this.email = "";
+      this.password = "";
+      this.errors = { email: false, password: false };
+    },
   },
 };
 </script>
+
 
 <style scoped>
 .auth-container {

@@ -11,7 +11,7 @@ const routes = [
   {
     path: '/home',
     component: HomePage,
-    meta: { requiresAuth: true } // Protected route
+    meta: { requiresAuth: false } // Protected route
   },
 ];
 

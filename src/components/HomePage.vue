@@ -130,6 +130,15 @@ export default {
       }
 
       const formData = new FormData();
+      
+      // Add user_id explicitly, assuming it's saved in localStorage
+      const userId = localStorage.getItem("user_id"); // Make sure you have the user_id stored in localStorage
+      if (!userId) {
+        alert("User ID is required. Please log in.");
+        return;
+      }
+
+      formData.append("user_id", userId);  // Include user_id in the request
       formData.append("video", this.video);
       formData.append("club1_player_color", this.team1PlayerColor);
       formData.append("club1_goalkeeper_color", this.team1GoalkeeperColor);
@@ -139,14 +148,17 @@ export default {
       this.isLoading = true;
       try {
         const response = await axios.post("http://localhost:5000/process-video", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
           onUploadProgress: (progressEvent) => {
             this.uploadProgress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
           },
         });
         this.outputVideoUrl = `http://localhost:5000${response.data.output_video}`;
       } catch (error) {
-        alert("Error processing video.");
+        console.error("Error:", error.response?.data || error.message);
+        alert("Error processing video. Please try again.");
       } finally {
         this.isLoading = false;
         this.uploadProgress = 0;
