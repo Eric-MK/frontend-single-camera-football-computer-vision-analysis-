@@ -3,6 +3,7 @@ import LandingPage from '../components/LandingPage.vue';
 import HomePage from '../components/HomePage.vue';
 import Login from '../components/Login.vue';
 import Registration from '../components/Registration.vue';
+import UserVideos from '../components/UserVideos.vue'; // Import the UserVideos component
 
 const routes = [
   { path: '/', component: LandingPage },
@@ -12,6 +13,12 @@ const routes = [
     path: '/home',
     component: HomePage,
     meta: { requiresAuth: true }, // Protected route
+  },
+  // Add route for UserVideos
+  {
+    path: '/user-videos',
+    component: UserVideos,
+    meta: { requiresAuth: true }, // Ensure authentication is required
   },
 ];
 

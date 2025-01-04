@@ -4,6 +4,8 @@
       <li><router-link to="/">Home</router-link></li>
       <li v-if="!authState.isAuthenticated"><router-link to="/login">Login</router-link></li>
       <li v-if="!authState.isAuthenticated"><router-link to="/register">Register</router-link></li>
+      <!-- Add this link to UserVideos page -->
+      <li v-if="authState.isAuthenticated"><router-link to="/user-videos">Your Videos</router-link></li>
     </ul>
     <div class="user-section" v-if="authState.isAuthenticated">
       <span class="user-name">{{ userName }}</span>
