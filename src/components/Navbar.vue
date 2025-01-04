@@ -4,39 +4,48 @@
       <li><router-link to="/">Home</router-link></li>
       <li v-if="!authState.isAuthenticated"><router-link to="/login">Login</router-link></li>
       <li v-if="!authState.isAuthenticated"><router-link to="/register">Register</router-link></li>
-      <li v-if="authState.isAuthenticated">
-        <button @click="logout" class="logout-btn">Logout</button>
-      </li>
     </ul>
+    <div class="user-section" v-if="authState.isAuthenticated">
+      <span class="user-name">{{ userName }}</span>
+      <button @click="logout" class="logout-btn">Logout</button>
+    </div>
   </nav>
 </template>
 
 <script>
-import { reactive, watchEffect } from "vue";
-import { useRouter } from 'vue-router';  // Ensure you import the router
+import { reactive, onMounted, ref } from "vue";
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
-    const router = useRouter();  // Initialize the router
+    const router = useRouter();
     const authState = reactive({
-      isAuthenticated: !!localStorage.getItem("user_id")
+      isAuthenticated: false
     });
+    const userName = ref("");  // Variable to hold the user's name
 
-    // Watch for changes to localStorage and update the authState accordingly
-    watchEffect(() => {
+    // Check authentication and set userName on mount
+    onMounted(() => {
+      // On page load, check if the user is authenticated (i.e., if user_id exists in localStorage)
       authState.isAuthenticated = !!localStorage.getItem("user_id");
+      if (authState.isAuthenticated) {
+        userName.value = localStorage.getItem("user_name") || "Guest";  // Get user name from localStorage
+      }
     });
 
     // Logout functionality
     const logout = () => {
-      localStorage.removeItem("user_id");  // Clear user_id from localStorage
-      authState.isAuthenticated = false;  // Update reactive state
-      router.push("/login");  // Redirect to login page
+      // Clear user_id and user_name from localStorage and force a page reload
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("user_name");
+      authState.isAuthenticated = false;
+      window.location.reload(); // Reload the page to reflect changes
     };
 
     return {
       authState,
-      logout
+      logout,
+      userName
     };
   }
 };
@@ -48,13 +57,14 @@ export default {
   color: white;
   padding: 10px 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Distribute items across the navbar */
   align-items: center;
 }
 
 .nav-links {
   display: flex;
   gap: 20px;
+  margin-right: auto; /* Push nav links to the left */
 }
 
 .nav-links li {
@@ -80,5 +90,16 @@ export default {
   cursor: pointer;
   background-color: transparent;
   padding: 10px 15px;
+}
+
+.user-section {
+  display: flex;
+  align-items: center; /* Align username and logout button horizontally */
+  gap: 10px; /* Add spacing between username and button */
+}
+
+.user-name {
+  font-size: 16px;
+  color: white;
 }
 </style>

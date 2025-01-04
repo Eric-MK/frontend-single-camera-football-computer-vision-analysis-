@@ -87,6 +87,7 @@ export default {
 
         // Save user_id in localStorage
         localStorage.setItem("user_id", response.data.user_id);
+        localStorage.setItem("user_name", response.data.user_name); // Save user name
 
         // Navigate to homepage
         this.$router.push("/home");
