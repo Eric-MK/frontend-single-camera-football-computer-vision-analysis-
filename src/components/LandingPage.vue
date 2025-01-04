@@ -4,7 +4,7 @@
       <h1>Football Match Analysis</h1>
     </header>
     <main class="main-content">
-      <p>Welcome to our cutting-edge platform designed for advanced football match analysis using a single-camera solution. Unlock insights from your matches with our powerful computer vision tools. Whether you're a coach, player, or analyst, our application provides you with real-time stats and performance metrics that can elevate your game.</p>
+      <p>Welcome to our cutting-edge platform designed for advanced football match analysis using a single-camera solution. Unlock insights from your matches with our powerful computer vision tools. Whether you're a coach, player, or analyst, our application provides you with performance metrics that can elevate your game.</p>
       <button @click="navigateToLogin" class="login-btn">Get Started</button>
     </main>
   </div>
