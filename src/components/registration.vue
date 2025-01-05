@@ -63,8 +63,25 @@
         <div class="spinner"></div>
       </div>
     </form>
+
+    <!-- Success Modal -->
+    <div v-if="showSuccessModal" class="modal-overlay">
+      <div class="modal">
+        <p>Registration successful! You can now log in.</p>
+        <button @click="redirectToLogin">Go to Login</button>
+      </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div v-if="showErrorModal" class="modal-overlay">
+      <div class="modal">
+        <p>Registration failed. Please try again.</p>
+        <button @click="closeErrorModal">Close</button>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -83,6 +100,8 @@ export default {
         confirmPassword: false,
       },
       loading: false, // Loading state for API requests
+      showSuccessModal: false, // To show success modal
+      showErrorModal: false, // To show error modal
     };
   },
   methods: {
@@ -96,7 +115,7 @@ export default {
     async submitRegistration() {
       this.validateRegistrationForm();
       if (Object.values(this.errors).includes(true)) {
-        alert("Please correct the errors before submitting.");
+        this.showErrorModal = true; // Show modal if validation fails
         return;
       }
 
@@ -107,18 +126,24 @@ export default {
           email: this.email,
           password: this.password,
         });
-        alert("Registration successful!");
-        // Redirect or handle success (e.g., login the user)
-        this.$router.push("/login"); // Navigate to login page
+        this.showSuccessModal = true; // Show success modal on registration
       } catch (error) {
-        alert("Registration failed. Please try again.");
+        this.showErrorModal = true; // Show error modal on failure
       } finally {
         this.loading = false; // Reset loading state
       }
     },
+    redirectToLogin() {
+      this.showSuccessModal = false;
+      this.$router.push("/login"); // Navigate to login page
+    },
+    closeErrorModal() {
+      this.showErrorModal = false;
+    },
   },
 };
 </script>
+
 
 <style scoped>
 .auth-container {
@@ -217,6 +242,49 @@ label {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.modal p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.modal button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+  background-color: #0056b3;
 }
 
 @keyframes spin {
