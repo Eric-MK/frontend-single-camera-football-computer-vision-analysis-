@@ -240,7 +240,7 @@ label {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6); /* Slightly darker overlay for focus */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -249,9 +249,61 @@ label {
 
 .modal {
   background: white;
-  padding: 20px;
+  padding: 30px; /* Increased padding for better spacing */
+  border-radius: 8px; /* Slightly rounded corners */
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  animation: fadeIn 0.3s ease-out; /* Smooth entrance animation */
+}
+
+.modal p {
+  font-size: 16px;
+  color: #333; /* Neutral text color */
+  margin-bottom: 20px;
+}
+
+.modal button {
+  margin: 5px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Add interaction feedback */
+}
+
+.modal button:hover {
+  background-color: #0056b3; /* Slightly darker blue on hover */
+  transform: scale(1.05); /* Subtle scaling effect */
+}
+
+.modal button:active {
+  transform: scale(1); /* Reset scaling when button is clicked */
+}
+
+/* Cancel button styling (if different from primary) */
+.modal button:last-child {
+  background-color: #6c757d; /* Gray background for secondary action */
+}
+
+.modal button:last-child:hover {
+  background-color: #5a6268; /* Slightly darker gray on hover */
+}
+
+/* Smooth fade-in animation for the modal */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 button {
