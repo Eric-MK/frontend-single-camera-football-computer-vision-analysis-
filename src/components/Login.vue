@@ -46,8 +46,17 @@
         <button @click="goToRegister">Go to Registration</button>
       </div>
     </div>
+
+    <!-- Modal for successful login -->
+    <div v-if="showSuccessModal" class="modal-overlay">
+      <div class="modal">
+        <p>Login successful! Redirecting to the homepage...</p>
+        <button @click="closeSuccessModal">Okay</button>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -63,6 +72,7 @@ export default {
       },
       loading: false, // Loading state for API requests
       showErrorModal: false, // To show modal when login fails
+      showSuccessModal: false, // To show modal for successful login
     };
   },
   methods: {
@@ -89,9 +99,13 @@ export default {
         localStorage.setItem("user_id", response.data.user_id);
         localStorage.setItem("user_name", response.data.user_name); // Save user name
 
-        // Navigate to homepage
-        this.$router.push("/home");
-        alert("Login successful!");
+        // Show success modal
+        this.showSuccessModal = true;
+
+        // Navigate to homepage after a short delay
+        setTimeout(() => {
+          this.$router.push("/home");
+        }, 2000);
       } catch (error) {
         if (error.response && error.response.status === 401) {
           // Show modal when login fails
@@ -106,13 +120,18 @@ export default {
 
     retryLogin() {
       this.clearForm();
-      this.showErrorModal = false; // Hide modal
+      this.showErrorModal = false; // Hide error modal
     },
 
     goToRegister() {
       this.clearForm();
-      this.showErrorModal = false; // Hide modal
+      this.showErrorModal = false; // Hide error modal
       this.$router.push("/register"); // Redirect to registration page
+    },
+
+    closeSuccessModal() {
+      this.showSuccessModal = false; // Hide success modal
+      this.$router.push("/home"); // Redirect to homepage
     },
 
     clearForm() {
@@ -123,6 +142,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped>
