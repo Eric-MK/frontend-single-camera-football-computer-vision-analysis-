@@ -91,10 +91,18 @@ export default {
 .logout-btn {
   border: none;
   cursor: pointer;
-  background-color: transparent;
+  background-color: #fa5f5f; /* Set a distinct red background for the logout button */
+  color: white; /* White text for contrast */
   padding: 10px 15px;
+  border-radius: 5px; /* Rounded corners */
+  font-size: 14px;
+  font-weight: bold; /* Bold text */
+  transition: background-color 0.3s ease; /* Smooth hover effect */
 }
 
+.logout-btn:hover {
+  background-color: #e60000; /* Darker red on hover */
+}
 .user-section {
   display: flex;
   align-items: center; /* Align username and logout button horizontally */
@@ -103,6 +111,7 @@ export default {
 
 .user-name {
   font-size: 16px;
-  color: white;
+  color: #9d9f9a; /* Change the username color to a vibrant green */
+  font-weight: bold; /* Make the username text bold */
 }
 </style>
