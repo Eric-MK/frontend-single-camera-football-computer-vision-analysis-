@@ -66,6 +66,13 @@
       <p>Processing your video, please wait...</p>
     </div>
 
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal">
+        <p>{{ modalMessage }}</p>
+        <button @click="closeModal">OK</button>
+      </div>
+    </div>
+
     <div v-if="outputVideoUrl" class="output-container">
       <div class="success-message">
         <p>Video processed successfully! Download it below.</p>
@@ -76,6 +83,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -91,6 +99,8 @@ export default {
       outputVideoUrl: null,
       uploadProgress: 0,
       isLoading: false,
+      showModal: false,
+      modalMessage: "",
       errors: {
         team1PlayerColor: false,
         team1GoalkeeperColor: false,
@@ -120,25 +130,26 @@ export default {
     async submitVideo() {
       this.handleValidation();
       if (Object.values(this.errors).includes(true)) {
-        alert("Please correct invalid color inputs.");
+        this.modalMessage = "Please correct invalid color inputs.";
+        this.showModal = true;
         return;
       }
 
       if (!this.video) {
-        alert("Please upload a video.");
+        this.modalMessage = "Please upload a video.";
+        this.showModal = true;
         return;
       }
 
       const formData = new FormData();
-      
-      // Add user_id explicitly, assuming it's saved in localStorage
-      const userId = localStorage.getItem("user_id"); // Make sure you have the user_id stored in localStorage
+      const userId = localStorage.getItem("user_id");
       if (!userId) {
-        alert("User ID is required. Please log in.");
+        this.modalMessage = "User ID is required. Please log in.";
+        this.showModal = true;
         return;
       }
 
-      formData.append("user_id", userId);  // Include user_id in the request
+      formData.append("user_id", userId);
       formData.append("video", this.video);
       formData.append("club1_player_color", this.team1PlayerColor);
       formData.append("club1_goalkeeper_color", this.team1GoalkeeperColor);
@@ -156,19 +167,25 @@ export default {
           },
         });
         this.outputVideoUrl = `http://localhost:5000${response.data.output_video}`;
+        this.modalMessage = "Video processed successfully!";
       } catch (error) {
         console.error("Error:", error.response?.data || error.message);
-        alert("Error processing video. Please try again.");
+        this.modalMessage = "Error processing video. Please try again.";
       } finally {
         this.isLoading = false;
         this.uploadProgress = 0;
+        this.showModal = true;
       }
+    },
+    closeModal() {
+      this.showModal = false;
     },
   },
 };
 </script>
 
-<style setup>
+
+<style scoped>
 .container {
   max-width: 800px;
   margin: 50px auto;
@@ -317,5 +334,60 @@ label {
 
 .download-link:hover {
   color: #0056b3;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.modal button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.modal button:hover {
+  background-color: #0056b3;
+}
+
+/* Smooth fade-in animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
