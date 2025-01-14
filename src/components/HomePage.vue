@@ -7,52 +7,48 @@
         <input id="video-upload" type="file" @change="handleFile" class="input-file" aria-required="true" />
       </div>
       <div class="form-group">
-        <label for="team1-player">Team 1 Player Color (R,G,B):</label>
+        <label for="team1-player">Team 1 Player Color:</label>
         <input
           id="team1-player"
-          v-model="team1PlayerColor"
-          type="text"
-          :class="{ invalid: errors.team1PlayerColor }"
-          @blur="handleValidation"
-          class="input-text"
+          type="color"
+          v-model="team1PlayerColorHex"
+          @input="convertHexToRGB('team1PlayerColor', team1PlayerColorHex)"
+          class="color-picker"
         />
-        <span v-if="errors.team1PlayerColor" class="error-message">Invalid color format. Use R,G,B.</span>
+        <input type="text" :value="team1PlayerColor" readonly class="readonly-input" />
       </div>
       <div class="form-group">
-        <label for="team1-goalkeeper">Team 1 Goalkeeper Color (R,G,B):</label>
+        <label for="team1-goalkeeper">Team 1 Goalkeeper Color:</label>
         <input
           id="team1-goalkeeper"
-          v-model="team1GoalkeeperColor"
-          type="text"
-          :class="{ invalid: errors.team1GoalkeeperColor }"
-          @blur="handleValidation"
-          class="input-text"
+          type="color"
+          v-model="team1GoalkeeperColorHex"
+          @input="convertHexToRGB('team1GoalkeeperColor', team1GoalkeeperColorHex)"
+          class="color-picker"
         />
-        <span v-if="errors.team1GoalkeeperColor" class="error-message">Invalid color format. Use R,G,B.</span>
+        <input type="text" :value="team1GoalkeeperColor" readonly class="readonly-input" />
       </div>
       <div class="form-group">
-        <label for="team2-player">Team 2 Player Color (R,G,B):</label>
+        <label for="team2-player">Team 2 Player Color:</label>
         <input
           id="team2-player"
-          v-model="team2PlayerColor"
-          type="text"
-          :class="{ invalid: errors.team2PlayerColor }"
-          @blur="handleValidation"
-          class="input-text"
+          type="color"
+          v-model="team2PlayerColorHex"
+          @input="convertHexToRGB('team2PlayerColor', team2PlayerColorHex)"
+          class="color-picker"
         />
-        <span v-if="errors.team2PlayerColor" class="error-message">Invalid color format. Use R,G,B.</span>
+        <input type="text" :value="team2PlayerColor" readonly class="readonly-input" />
       </div>
       <div class="form-group">
-        <label for="team2-goalkeeper">Team 2 Goalkeeper Color (R,G,B):</label>
+        <label for="team2-goalkeeper">Team 2 Goalkeeper Color:</label>
         <input
           id="team2-goalkeeper"
-          v-model="team2GoalkeeperColor"
-          type="text"
-          :class="{ invalid: errors.team2GoalkeeperColor }"
-          @blur="handleValidation"
-          class="input-text"
+          type="color"
+          v-model="team2GoalkeeperColorHex"
+          @input="convertHexToRGB('team2GoalkeeperColor', team2GoalkeeperColorHex)"
+          class="color-picker"
         />
-        <span v-if="errors.team2GoalkeeperColor" class="error-message">Invalid color format. Use R,G,B.</span>
+        <input type="text" :value="team2GoalkeeperColor" readonly class="readonly-input" />
       </div>
       <button type="submit" class="submit-btn">Submit</button>
     </form>
@@ -84,7 +80,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from "axios";
 
@@ -93,48 +88,32 @@ export default {
     return {
       video: null,
       team1PlayerColor: "",
+      team1PlayerColorHex: "#000000",
       team1GoalkeeperColor: "",
+      team1GoalkeeperColorHex: "#000000",
       team2PlayerColor: "",
+      team2PlayerColorHex: "#000000",
       team2GoalkeeperColor: "",
+      team2GoalkeeperColorHex: "#000000",
       outputVideoUrl: null,
       uploadProgress: 0,
       isLoading: false,
       showModal: false,
       modalMessage: "",
-      errors: {
-        team1PlayerColor: false,
-        team1GoalkeeperColor: false,
-        team2PlayerColor: false,
-        team2GoalkeeperColor: false,
-      },
     };
   },
   methods: {
     handleFile(event) {
       this.video = event.target.files[0];
     },
-    validateColorInput(color) {
-      const trimmedColor = color.replace(/\s+/g, ""); // Remove all spaces
-      const regex = /^\d{1,3},\d{1,3},\d{1,3}$/;
-      if (!regex.test(trimmedColor)) return false;
-
-      const [r, g, b] = trimmedColor.split(",").map(Number);
-      return r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255;
-    },
-    handleValidation() {
-      this.errors.team1PlayerColor = !this.validateColorInput(this.team1PlayerColor);
-      this.errors.team1GoalkeeperColor = !this.validateColorInput(this.team1GoalkeeperColor);
-      this.errors.team2PlayerColor = !this.validateColorInput(this.team2PlayerColor);
-      this.errors.team2GoalkeeperColor = !this.validateColorInput(this.team2GoalkeeperColor);
+    convertHexToRGB(property, hexColor) {
+      const bigint = parseInt(hexColor.slice(1), 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      this[property] = `${r},${g},${b}`;
     },
     async submitVideo() {
-      this.handleValidation();
-      if (Object.values(this.errors).includes(true)) {
-        this.modalMessage = "Please correct invalid color inputs.";
-        this.showModal = true;
-        return;
-      }
-
       if (!this.video) {
         this.modalMessage = "Please upload a video.";
         this.showModal = true;
@@ -184,7 +163,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .container {
   max-width: 800px;
@@ -220,22 +198,26 @@ label {
   color: #555;
 }
 
-.input-file,
-.input-text {
+.input-file {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.input-text.invalid {
-  border: 1px solid #e74c3c;
-  background-color: #fbeaea;
+.color-picker {
+  width: 50px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
 }
 
-.error-message {
-  color: #e74c3c;
-  font-size: 12px;
+.readonly-input {
   margin-top: 5px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  cursor: not-allowed;
 }
 
 .submit-btn {
@@ -379,7 +361,6 @@ label {
   background-color: #0056b3;
 }
 
-/* Smooth fade-in animation */
 @keyframes fadeIn {
   0% {
     opacity: 0;
